@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <title>App Financeiro</title>
+
+<!-- Chart -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- PDF Reader -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
 <style>
 body {
@@ -35,13 +40,8 @@ button {
     cursor: pointer;
 }
 
-.delete {
-    background: red;
-}
-
-.edit {
-    background: orange;
-}
+.delete { background: red; }
+.edit { background: orange; }
 
 .item {
     display: flex;
@@ -87,6 +87,12 @@ button {
     <button onclick="add()" id="btnAdd">Adicionar</button>
 </div>
 
+<!-- IMPORTAR PDF -->
+<div class="card">
+    <h3>📂 Importar fatura (PDF)</h3>
+    <input type="file" id="pdfInput">
+</div>
+
 <div class="card">
     <canvas id="graficoCategoria"></canvas>
 </div>
@@ -105,6 +111,29 @@ button {
 let dados = JSON.parse(localStorage.getItem("dados")) || [];
 let editIndex = null;
 
+// 🧠 CATEGORIA AUTOMÁTICA (fallback)
+function detectarCategoria(desc) {
+    desc = desc.toLowerCase();
+
+    if (desc.includes("mercado") || desc.includes("padaria") || desc.includes("restaurante") || desc.includes("ifood"))
+        return "Alimentação";
+
+    if (desc.includes("posto") || desc.includes("shell"))
+        return "Combustível";
+
+    if (desc.includes("uber"))
+        return "Transporte";
+
+    return "Outros";
+}
+
+// 💳 DETECTAR CARTÃO
+function detectarCartao(linha) {
+    if (linha.includes("••••")) return "Nubank";
+    return "Ourocard";
+}
+
+// ➕ ADICIONAR / EDITAR
 function add() {
     let desc = document.getElementById("desc").value;
     let categoria = document.getElementById("categoria").value;
@@ -115,13 +144,13 @@ function add() {
 
     let mes = new Date().getMonth() + 1;
 
+    if (!categoria) categoria = detectarCategoria(desc);
+
     if (editIndex !== null) {
-        // ✏️ EDITANDO
         dados[editIndex] = {desc, categoria, cartao, val, mes};
         editIndex = null;
         document.getElementById("btnAdd").innerText = "Adicionar";
     } else {
-        // ➕ NOVO
         dados.push({desc, categoria, cartao, val, mes});
     }
 
@@ -129,6 +158,7 @@ function add() {
     atualizar();
 }
 
+// ✏️ EDITAR
 function editar(i) {
     let d = dados[i];
 
@@ -141,17 +171,83 @@ function editar(i) {
     document.getElementById("btnAdd").innerText = "Salvar";
 }
 
+// 🗑️ REMOVER
 function remover(i) {
     dados.splice(i,1);
     atualizar();
 }
 
+// 🧹 LIMPAR
 function limpar() {
     document.getElementById("desc").value = "";
     document.getElementById("categoria").value = "";
     document.getElementById("val").value = "";
 }
 
+// 📂 IMPORTAR PDF
+document.getElementById('pdfInput').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async function() {
+        const typedarray = new Uint8Array(this.result);
+        const pdf = await pdfjsLib.getDocument(typedarray).promise;
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+
+            const text = content.items.map(item => item.str).join(" ");
+            processarTexto(text);
+        }
+    };
+
+    reader.readAsArrayBuffer(file);
+});
+
+// 🧠 PROCESSAR TEXTO DO PDF
+function processarTexto(texto) {
+
+    let linhas = texto.split(/(?=\d{2}\/\d{2})|(?=\d{1,2} [A-Z]{3})/);
+
+    linhas.forEach(linha => {
+
+        let ouro = linha.match(/(\d{2})\/(\d{2}).*?R\$ ?([\d,]+)/);
+        let nubank = linha.match(/(\d{1,2}) [A-Z]{3}.*?R\$ ?([\d,]+)/);
+
+        let valor = 0;
+        let desc = "";
+
+        if (ouro) {
+            valor = parseFloat(ouro[3].replace(",", "."));
+            desc = linha.replace(/R\$.*$/, "").trim();
+        }
+
+        if (nubank) {
+            valor = parseFloat(nubank[2].replace(",", "."));
+            desc = linha
+                .replace(/.*\d{4}/, "")
+                .replace(/- Parcela.*$/, "")
+                .replace(/R\$.*$/, "")
+                .trim();
+        }
+
+        if (valor > 0) {
+            dados.push({
+                desc: desc,
+                categoria: detectarCategoria(desc),
+                cartao: detectarCartao(linha),
+                val: valor,
+                mes: new Date().getMonth() + 1
+            });
+        }
+
+    });
+
+    atualizar();
+}
+
+// 🔄 ATUALIZAR TELA
 function atualizar() {
 
     let mesAtual = new Date().getMonth() + 1;
@@ -171,6 +267,7 @@ function atualizar() {
         </div>
     `).join("");
 
+    // gráfico categoria
     let cat = {};
     dadosMes.forEach(d=>{
         cat[d.categoria] = (cat[d.categoria]||0) + d.val;
@@ -185,6 +282,7 @@ function atualizar() {
         }
     });
 
+    // gráfico mês
     let meses = {};
     dados.forEach(d=>{
         meses[d.mes] = (meses[d.mes]||0) + d.val;
