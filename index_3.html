@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
@@ -47,7 +46,6 @@ button:hover {
     padding: 5px 0;
 }
 </style>
-
 </head>
 
 <body>
@@ -76,7 +74,6 @@ button:hover {
 
 <script>
 
-// 🔥 AGORA SALVA AUTOMATICAMENTE
 let dados = JSON.parse(localStorage.getItem("dados")) || [];
 
 function add() {
@@ -123,11 +120,9 @@ function atualizar() {
         }
     });
 
-    // 💾 SALVA NO NAVEGADOR
     localStorage.setItem("dados", JSON.stringify(dados));
 }
 
-// 🔄 CARREGA AUTOMATICAMENTE AO ABRIR
 atualizar();
 
 </script>
