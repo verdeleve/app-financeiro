@@ -3,103 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financeiro PRO | Dashboard</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-
+    <title>Interface Mobile Otimizada</title>
     <style>
+        /* Variáveis para facilitar a manutenção */
         :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --accent: #22c55e;
-            --danger: #ef4444;
-            --text: #f8fafc;
+            --primary-color: #007AFF;
+            --bg-color: #f5f5f7;
+            --text-color: #1d1d1f;
+            --card-bg: #ffffff;
+            --radius: 12px;
+            --spacing: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container { max-width: 900px; margin: 0 auto; }
+        /* Container Principal */
+        .app-container {
+            padding: var(--spacing);
+            max-width: 500px; /* Limite para não esticar demais em tablets */
+            margin: 0 auto;
+        }
 
-        h1 { text-align: center; color: var(--accent); margin-bottom: 30px; }
+        /* Header Simples */
+        header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
 
+        h1 {
+            font-size: 1.5rem; /* 24px */
+            font-weight: 700;
+        }
+
+        /* Card Layout */
         .card {
-            background: var(--card);
+            background: var(--card-bg);
+            border-radius: var(--radius);
             padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: var(--spacing);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        .grid-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-
-        select, input, button {
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: white;
-            font-size: 14px;
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
         }
 
-        button {
-            background: var(--accent);
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: opacity 0.2s;
+        .card p {
+            font-size: 0.95rem;
+            color: #515154;
         }
 
-        button:hover { opacity: 0.8; }
-        button.btn-del { background: none; color: var(--danger); padding: 5px; }
-
-        .stats-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
-        .badge { background: #334155; padding: 10px 15px; border-radius: 8px; font-size: 0.9em; }
-
-        .form-input { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
-
-        .item {
+        /* Botão Mobile (Touch Target) */
+        .btn-primary {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #334155;
-            padding: 12px 0;
+            justify-content: center;
+            width: 100%;
+            min-height: 50px; /* Altura ideal para o polegar */
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.2s;
+            cursor: pointer;
         }
 
-        canvas { max-height: 300px; }
-        .charts-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .btn-primary:active {
+            opacity: 0.7; /* Feedback visual ao tocar */
+        }
+
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>💰 Financeiro PRO</h1>
+    <div class="app-container">
+        <header>
+            <h1>Minha App</h1>
+        </header>
 
-    <div class="card">
-        <div class="grid-header">
-            <div>
-                <span>Filtrar Mês:</span>
-                <select id="filtroMes" onchange="atualizar()"></select>
-            </div>
-            <div style="text-align: right;">
-                <small>Total no Mês</small>
-                <h2 style="margin:0">R$ <span id="total">0,00</span></h2>
-                <small id="comparacao" style="color: #94a3b8;"></small>
-            </div>
-        </div>
-        <div id="cardsCartoes" class="stats-grid"></div>
+        <main>
+            <section class="card">
+                <h2>Informação Importante</h2>
+                <p>Este layout foi reduzido para evitar rolagem horizontal e facilitar a leitura rápida em dispositivos móveis.</p>
+            </section>
+
+            <section class="card">
+                <h2>Ajuste de Performance</h2>
+                <p>Elementos empilhados verticalmente garantem que o usuário navegue apenas com o polegar.</p>
+            </section>
+
+            <button class="btn-primary">Ação Principal</button>
+        </main>
     </div>
 
-    <div class="card">
-        <h3>➕ Novo Lançamento</h3>
-        <div class="form-input">
-            <input id="desc" placeholder="Descrição (Ex: Uber, Mercado...)">
+</body>
+</html>
             <select id="categoria">
                 <option value="">Categoria Automática</option>
                 <option>Alimentação</option>
