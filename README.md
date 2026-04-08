@@ -1,4 +1,3 @@
-
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
@@ -409,6 +408,7 @@ canvas {
             <label>Categoria</label>
             <select id="categoria">
                 <option value="">🤖 Automático</option>
+                <option>🛒 Mercado</option>
                 <option>🍔 Alimentação</option>
                 <option>⛽ Combustível</option>
                 <option>🚗 Transporte</option>
@@ -433,7 +433,7 @@ canvas {
 
         <div class="form-group">
             <label>Valor (R$)</label>
-            <input id="val" type="number" step="0.01" placeholder="0,00" min="0.01">
+            <input id="val" type="text" placeholder="0,00" autocomplete="off">
         </div>
 
         <!-- TOGGLE DATA AUTOMÁTICA -->
@@ -511,20 +511,37 @@ const dataManualInput = document.getElementById("dataManual");
 
 let chartInstance = null;
 
-// ---------- FUNÇÕES AUXILIARES ----------
+// ---------- FUNÇÃO PARA CONVERTER VALOR COM VÍRGULA ----------
+function converterValorParaNumero(valorStr) {
+    // Remove espaços
+    valorStr = valorStr.trim();
+    // Substitui vírgula por ponto
+    valorStr = valorStr.replace(',', '.');
+    // Remove qualquer coisa que não seja número ou ponto (exceto o primeiro ponto)
+    let partes = valorStr.split('.');
+    if (partes.length > 2) {
+        // Se tiver mais de um ponto, mantém só o primeiro (como separador decimal)
+        valorStr = partes[0] + '.' + partes.slice(1).join('');
+    }
+    // Converte para número
+    let numero = parseFloat(valorStr);
+    return isNaN(numero) ? null : numero;
+}
+
 function gerarId() {
     return Date.now() + '-' + Math.random().toString(36).substr(2, 8);
 }
 
 function detectarCategoria(desc) {
     desc = desc.toLowerCase();
-    if (desc.includes("mercado") || desc.includes("padaria") || desc.includes("restaurante") || desc.includes("ifood")) return "🍔 Alimentação";
-    if (desc.includes("posto") || desc.includes("shell") || desc.includes("gasolina")) return "⛽ Combustível";
-    if (desc.includes("uber") || desc.includes("99")) return "🚗 Transporte";
-    if (desc.includes("netflix") || desc.includes("spotify")) return "📺 Assinatura";
-    if (desc.includes("farmacia") || desc.includes("medico")) return "💊 Saúde";
-    if (desc.includes("luz") || desc.includes("agua") || desc.includes("aluguel")) return "🏠 Casa";
-    if (desc.includes("roupa") || desc.includes("shopping")) return "🛍️ Compras";
+    if (desc.includes("mercado") || desc.includes("supermercado") || desc.includes("extra") || desc.includes("carrefour") || desc.includes("pão de açúcar") || desc.includes("assai") || desc.includes("atacadao")) return "🛒 Mercado";
+    if (desc.includes("padaria") || desc.includes("restaurante") || desc.includes("ifood") || desc.includes("lanche") || desc.includes("hamburguer")) return "🍔 Alimentação";
+    if (desc.includes("posto") || desc.includes("shell") || desc.includes("gasolina") || desc.includes("petrobras")) return "⛽ Combustível";
+    if (desc.includes("uber") || desc.includes("99") || desc.includes("taxi")) return "🚗 Transporte";
+    if (desc.includes("netflix") || desc.includes("spotify") || desc.includes("disney") || desc.includes("prime")) return "📺 Assinatura";
+    if (desc.includes("farmacia") || desc.includes("medico") || desc.includes("droga")) return "💊 Saúde";
+    if (desc.includes("luz") || desc.includes("agua") || desc.includes("aluguel") || desc.includes("condominio")) return "🏠 Casa";
+    if (desc.includes("roupa") || desc.includes("shopping") || desc.includes("loja")) return "🛍️ Compras";
     return "📌 Outros";
 }
 
@@ -573,14 +590,14 @@ function adicionarOuEditar() {
     let desc = descEl.value.trim();
     let categoria = catEl.value;
     let cartao = cartaoEl.value;
-    let val = parseFloat(valEl.value);
+    let val = converterValorParaNumero(valEl.value);
 
     if (!desc) {
         alert("Digite uma descrição!");
         return;
     }
-    if (isNaN(val) || val <= 0) {
-        alert("Digite um valor válido (maior que zero)!");
+    if (val === null || val <= 0) {
+        alert("Digite um valor válido (maior que zero)! Use ponto ou vírgula. Ex: 19,90 ou 19.90");
         return;
     }
 
@@ -640,7 +657,7 @@ function editarGasto(id) {
     descEl.value = item.desc;
     catEl.value = item.categoria;
     cartaoEl.value = item.cartao;
-    valEl.value = item.val;
+    valEl.value = item.val.toFixed(2).replace('.', ','); // Mostra com vírgula
 
     // Configurar data na edição
     const dataItem = `${item.ano}-${String(item.mes).padStart(2, '0')}-${String(item.dia).padStart(2, '0')}`;
@@ -752,7 +769,7 @@ function atualizarTela() {
                     <div class="item-desc">${item.desc}</div>
                     <div class="item-meta">${item.dia}/${item.mes}/${item.ano} • ${item.cartao} • ${item.categoria}</div>
                 </div>
-                <div class="item-valor">R$ ${item.val.toFixed(2)}</div>
+                <div class="item-valor">R$ ${item.val.toFixed(2).replace('.', ',')}</div>
                 <div class="item-actions">
                     <button class="btn-warning" onclick="editarGasto('${item.id}')">✏️</button>
                     <button class="btn-danger" onclick="removerGasto('${item.id}')">🗑️</button>
@@ -762,12 +779,12 @@ function atualizarTela() {
     }
 
     const total = dadosFiltrados.reduce((s, i) => s + i.val, 0);
-    totalEl.innerHTML = `R$ ${total.toFixed(2)}`;
+    totalEl.innerHTML = `R$ ${total.toFixed(2).replace('.', ',')}`;
 
     const cartoesMap = {};
     dadosFiltrados.forEach(i => cartoesMap[i.cartao] = (cartoesMap[i.cartao] || 0) + i.val);
     cardsDiv.innerHTML = Object.entries(cartoesMap).length ? 
-        Object.entries(cartoesMap).map(([k, v]) => `<div class="badge-card">${k}: R$ ${v.toFixed(2)}</div>`).join("") :
+        Object.entries(cartoesMap).map(([k, v]) => `<div class="badge-card">${k}: R$ ${v.toFixed(2).replace('.', ',')}</div>`).join("") :
         '<div class="badge-card">Nenhum gasto no período</div>';
 
     const categoriaMap = {};
@@ -780,7 +797,7 @@ function atualizarTela() {
             labels: Object.keys(categoriaMap).length ? Object.keys(categoriaMap) : ['Sem dados'],
             datasets: [{
                 data: Object.keys(categoriaMap).length ? Object.values(categoriaMap) : [1],
-                backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec489a', '#14b8a6', '#f97316', '#64748b'],
+                backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec489a', '#14b8a6', '#f97316', '#64748b', '#a855f7'],
                 borderWidth: 0
             }]
         },
