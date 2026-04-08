@@ -1,9 +1,9 @@
-
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-<title>App Financeiro PRO - Mobile</title>
+<title>App Financeiro PRO - Com Datas</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -28,14 +28,12 @@ body {
     min-height: 100vh;
 }
 
-/* Container principal - OCUPA 100% DA LARGURA */
 .container {
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
 }
 
-/* Títulos */
 h1 {
     text-align: center;
     font-size: 1.8rem;
@@ -54,7 +52,6 @@ h2, h3 {
     gap: 8px;
 }
 
-/* Cards */
 .card {
     background: #1e293b;
     border-radius: 20px;
@@ -64,7 +61,6 @@ h2, h3 {
     width: 100%;
 }
 
-/* Card de total - destaque */
 .card-total {
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
     border: 1px solid #334155;
@@ -78,7 +74,6 @@ h2, h3 {
     word-break: break-word;
 }
 
-/* Formulário */
 .form-group {
     margin-bottom: 12px;
     width: 100%;
@@ -142,6 +137,75 @@ button.btn-info {
     background: #3b82f6;
 }
 
+/* Toggle switch para data automática */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0f172a;
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.toggle-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #475569;
+    transition: 0.3s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #22c55e;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+.data-manual {
+    display: none;
+}
+
+.data-manual.visible {
+    display: block;
+}
+
 /* Grid de botões */
 .button-group {
     display: flex;
@@ -155,7 +219,6 @@ button.btn-info {
     margin-top: 0;
 }
 
-/* Grid de cards de pagamento */
 .grid-cards {
     display: flex;
     flex-wrap: wrap;
@@ -174,7 +237,6 @@ button.btn-info {
     word-break: keep-all;
 }
 
-/* Lista de gastos */
 .lista-gastos {
     max-height: 400px;
     overflow-y: auto;
@@ -227,14 +289,12 @@ button.btn-info {
     font-size: 0.85rem;
 }
 
-/* Gráfico responsivo */
 canvas {
     max-height: 280px;
     width: 100% !important;
     margin-top: 10px;
 }
 
-/* Filtro de mês */
 .filtro-row {
     display: flex;
     gap: 10px;
@@ -252,14 +312,12 @@ canvas {
     margin-top: 0;
 }
 
-/* Mensagem sem dados */
 .sem-dados {
     text-align: center;
     padding: 40px 20px;
     color: #64748b;
 }
 
-/* Scroll suave */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -275,115 +333,53 @@ canvas {
     border-radius: 10px;
 }
 
-/* ========== RESPONSIVIDADE GARANTIDA PARA GITHUB PAGES ========== */
+/* Responsividade */
 @media (max-width: 600px) {
-    body {
-        padding: 12px;
-    }
-    
-    .card {
-        padding: 16px;
-    }
-    
-    .total-valor {
-        font-size: 2rem;
-    }
-    
-    .item-gasto {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .item-actions {
-        justify-content: flex-end;
-    }
-    
-    .badge-card {
-        white-space: normal;
-        word-break: break-word;
-    }
-    
-    .filtro-row {
-        flex-direction: column;
-    }
-    
-    .filtro-row .form-group {
-        width: 100%;
-    }
-    
-    .button-group {
-        flex-direction: column;
-    }
-    
-    .button-group button {
-        width: 100%;
-    }
+    body { padding: 12px; }
+    .card { padding: 16px; }
+    .total-valor { font-size: 2rem; }
+    .item-gasto { flex-direction: column; align-items: stretch; }
+    .item-actions { justify-content: flex-end; }
+    .badge-card { white-space: normal; word-break: break-word; }
+    .filtro-row { flex-direction: column; }
+    .filtro-row .form-group { width: 100%; }
+    .button-group { flex-direction: column; }
+    .button-group button { width: 100%; }
 }
 
 @media (max-width: 400px) {
-    body {
-        padding: 8px;
-    }
-    
-    .card {
-        padding: 12px;
-    }
-    
-    .total-valor {
-        font-size: 1.6rem;
-    }
-    
-    h1 {
-        font-size: 1.4rem;
-    }
-    
-    h2, h3 {
-        font-size: 1rem;
-    }
-    
-    input, select, button {
-        padding: 12px 10px;
-        font-size: 14px;
-    }
+    body { padding: 8px; }
+    .card { padding: 12px; }
+    .total-valor { font-size: 1.6rem; }
+    h1 { font-size: 1.4rem; }
+    h2, h3 { font-size: 1rem; }
+    input, select, button { padding: 12px 10px; font-size: 14px; }
 }
 
 @media (min-width: 601px) and (max-width: 768px) {
-    .container {
-        max-width: 550px;
-    }
+    .container { max-width: 550px; }
 }
 
 @media (min-width: 769px) {
-    .container {
-        max-width: 600px;
-    }
+    .container { max-width: 600px; }
 }
 
 @media (orientation: landscape) and (max-height: 500px) {
-    .lista-gastos {
-        max-height: 180px;
-    }
-    
-    .total-valor {
-        font-size: 1.5rem;
-    }
+    .lista-gastos { max-height: 180px; }
+    .total-valor { font-size: 1.5rem; }
 }
 </style>
 </head>
 
 <body>
 <div class="container">
-    <h1>
-        <span>💰</span> App Financeiro
-    </h1>
+    <h1>💰 App Financeiro</h1>
 
-    <!-- Card Total -->
     <div class="card card-total">
         <h2>📊 Total do mês</h2>
         <div class="total-valor" id="total">R$ 0,00</div>
     </div>
 
-    <!-- Filtro -->
     <div class="card">
         <h3>📅 Período</h3>
         <div class="filtro-row">
@@ -395,13 +391,12 @@ canvas {
         </div>
     </div>
 
-    <!-- Cards por pagamento -->
     <div class="card">
         <h3>💳 Por forma de pagamento</h3>
         <div id="cards" class="grid-cards"></div>
     </div>
 
-    <!-- Formulário de adicionar -->
+    <!-- Formulário com DATA -->
     <div class="card">
         <h3>➕ Adicionar gasto</h3>
         
@@ -441,33 +436,46 @@ canvas {
             <input id="val" type="number" step="0.01" placeholder="0,00" min="0.01">
         </div>
 
+        <!-- TOGGLE DATA AUTOMÁTICA -->
+        <div class="toggle-container">
+            <span class="toggle-label">📅 Data automática (hoje)</span>
+            <label class="switch">
+                <input type="checkbox" id="autoDataToggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- DATA MANUAL (escondido inicialmente) -->
+        <div id="dataManualDiv" class="data-manual">
+            <div class="form-group">
+                <label>📆 Selecione a data</label>
+                <input type="date" id="dataManual">
+            </div>
+        </div>
+
         <div class="button-group">
             <button id="btnAdd">➕ Adicionar</button>
             <button id="btnCancelar" class="btn-secondary" style="display:none;">✖️ Cancelar</button>
         </div>
     </div>
 
-    <!-- Importar PDF -->
     <div class="card">
         <h3>📂 Importar fatura (PDF)</h3>
         <input type="file" id="pdfInput" accept=".pdf">
         <small style="color:#94a3b8; display:block; margin-top:8px;">📌 Suporte para faturas Nubank e Ourocard</small>
     </div>
 
-    <!-- Gráfico -->
     <div class="card">
         <h3>📊 Gastos por categoria</h3>
         <canvas id="grafico"></canvas>
     </div>
 
-    <!-- Lista de gastos -->
     <div class="card">
         <h3>📋 Lista de gastos</h3>
         <div id="lista" class="lista-gastos"></div>
         <div id="semDados" class="sem-dados">✨ Nenhum gasto no período</div>
     </div>
 
-    <!-- Botões extras -->
     <div class="button-group" style="margin-bottom: 20px;">
         <button id="btnExportar" class="btn-info">📎 Exportar backup</button>
         <button id="btnLimparTudo" class="btn-danger">⚠️ Limpar tudo</button>
@@ -497,6 +505,9 @@ const btnExportar = document.getElementById("btnExportar");
 const btnLimparTudo = document.getElementById("btnLimparTudo");
 const semDadosDiv = document.getElementById("semDados");
 const graficoCanvas = document.getElementById("grafico");
+const autoDataToggle = document.getElementById("autoDataToggle");
+const dataManualDiv = document.getElementById("dataManualDiv");
+const dataManualInput = document.getElementById("dataManual");
 
 let chartInstance = null;
 
@@ -523,6 +534,23 @@ function detectarCartaoPdf(linha) {
     return "💳 Nubank";
 }
 
+// Obter data atual formatada
+function getDataAtual() {
+    const hoje = new Date();
+    return {
+        dia: hoje.getDate(),
+        mes: hoje.getMonth() + 1,
+        ano: hoje.getFullYear()
+    };
+}
+
+// Obter data do input manual
+function getDataManual() {
+    if (!dataManualInput.value) return null;
+    const [ano, mes, dia] = dataManualInput.value.split('-').map(Number);
+    return { dia, mes, ano };
+}
+
 function salvarEAtualizar() {
     localStorage.setItem("dados", JSON.stringify(dados));
     atualizarTela();
@@ -536,6 +564,9 @@ function cancelarEdicao() {
     catEl.value = "";
     cartaoEl.value = "💳 Nubank";
     valEl.value = "";
+    autoDataToggle.checked = true;
+    dataManualDiv.classList.remove("visible");
+    dataManualInput.value = "";
 }
 
 function adicionarOuEditar() {
@@ -557,10 +588,25 @@ function adicionarOuEditar() {
         categoria = detectarCategoria(desc);
     }
 
-    const hoje = new Date();
-    const dia = hoje.getDate();
-    const mes = hoje.getMonth() + 1;
-    const ano = hoje.getFullYear();
+    // PEGAR DATA (automática ou manual)
+    let dia, mes, ano;
+    const usarDataAuto = autoDataToggle.checked;
+    
+    if (usarDataAuto) {
+        const dataAtual = getDataAtual();
+        dia = dataAtual.dia;
+        mes = dataAtual.mes;
+        ano = dataAtual.ano;
+    } else {
+        const dataManual = getDataManual();
+        if (!dataManual) {
+            alert("Por favor, selecione uma data!");
+            return;
+        }
+        dia = dataManual.dia;
+        mes = dataManual.mes;
+        ano = dataManual.ano;
+    }
 
     if (editId !== null) {
         const index = dados.findIndex(item => item.id === editId);
@@ -596,10 +642,26 @@ function editarGasto(id) {
     cartaoEl.value = item.cartao;
     valEl.value = item.val;
 
+    // Configurar data na edição
+    const dataItem = `${item.ano}-${String(item.mes).padStart(2, '0')}-${String(item.dia).padStart(2, '0')}`;
+    
+    // Verificar se a data do item é hoje
+    const hoje = getDataAtual();
+    const isHoje = (item.dia === hoje.dia && item.mes === hoje.mes && item.ano === hoje.ano);
+    
+    if (isHoje) {
+        autoDataToggle.checked = true;
+        dataManualDiv.classList.remove("visible");
+    } else {
+        autoDataToggle.checked = false;
+        dataManualDiv.classList.add("visible");
+        dataManualInput.value = dataItem;
+    }
+
     editId = id;
     btnAdd.textContent = "💾 Salvar edição";
     btnCancelar.style.display = "block";
-    document.querySelector(".card:nth-of-type(3)").scrollIntoView({ behavior: "smooth" });
+    document.querySelector(".card:nth-of-type(4)").scrollIntoView({ behavior: "smooth" });
 }
 
 function removerGasto(id) {
@@ -688,7 +750,7 @@ function atualizarTela() {
             <div class="item-gasto">
                 <div class="item-info">
                     <div class="item-desc">${item.desc}</div>
-                    <div class="item-meta">${item.dia}/${item.mes} • ${item.cartao} • ${item.categoria}</div>
+                    <div class="item-meta">${item.dia}/${item.mes}/${item.ano} • ${item.cartao} • ${item.categoria}</div>
                 </div>
                 <div class="item-valor">R$ ${item.val.toFixed(2)}</div>
                 <div class="item-actions">
@@ -747,6 +809,20 @@ function limparTodosDados() {
     }
 }
 
+// Toggle da data automática
+function toggleDataAuto() {
+    if (autoDataToggle.checked) {
+        dataManualDiv.classList.remove("visible");
+        dataManualInput.value = "";
+    } else {
+        dataManualDiv.classList.add("visible");
+        // Pré-preencher com a data atual
+        const hoje = new Date();
+        const dataHoje = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
+        dataManualInput.value = dataHoje;
+    }
+}
+
 function init() {
     const hoje = new Date();
     mesAtualFiltro = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
@@ -758,6 +834,11 @@ function init() {
     btnExportar.onclick = exportarDados;
     btnLimparTudo.onclick = limparTodosDados;
     pdfInput.onchange = (e) => { if (e.target.files.length) importarPdf(e.target.files[0]); pdfInput.value = ""; };
+    
+    autoDataToggle.onchange = toggleDataAuto;
+    
+    // Data manual inicial vazia
+    dataManualInput.value = "";
 
     atualizarTela();
 }
